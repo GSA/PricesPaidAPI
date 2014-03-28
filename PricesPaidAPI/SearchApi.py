@@ -15,6 +15,7 @@ from OS2Adapter import getDictionaryFromOS2,loadOS2FromCSVFile
 from GSAAdvAdapter import getDictionaryFromGSAAdv,loadGSAAdvFromCSVFile
 from LabEquipAdapter import getDictionaryFromLabEquipment,loadLabequipmentFromCSVFile
 from USASpendingAdapter import getDictionaryFromUSASpending,loadUSASpendingFromCSVFile
+from EDWGSAAdvAdapter import getDictionaryFromEDWGSAAdv,loadEDWGSAAdvFromCSVFile
 
 from os import listdir
 from os.path import isfile, join
@@ -65,7 +66,9 @@ VERSION_ADAPTER_MAP = { '1': [loadRevAucFromCSVFile,getDictionaryFromRevAuc],
                         '2': [loadOS2FromCSVFile,getDictionaryFromOS2],
                         '3': [loadGSAAdvFromCSVFile,getDictionaryFromGSAAdv],
                         '4': [loadLabequipmentFromCSVFile,getDictionaryFromLabEquipment],
-                        '5': [loadUSASpendingFromCSVFile,getDictionaryFromUSASpending]}
+			'5': [loadUSASpendingFromCSVFile,getDictionaryFromUSASpending],
+                        '6': [loadEDWGSAAdvFromCSVFile,getDictionaryFromEDWGSAAdv]}
+
 
 # This routine needs to become the basis of the SolrLodr...
 

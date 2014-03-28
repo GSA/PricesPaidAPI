@@ -26,7 +26,7 @@ import sys, os
 import Transaction
 import time
 
-from ppApiConfig import PathToDataFiles, MAXIMUM_NUMBER_TO_LOAD
+from ppApiConfig import PathToDataFiles, MAXIMUM_NUMBER_TO_LOAD, SolrDeleteExistingData
 
 # Note: For now, these are explict imports.
 # Evntually, we want to make this automatic, and essentially
@@ -38,6 +38,7 @@ from OS2Adapter import getDictionaryFromOS2,loadOS2FromCSVFile
 from GSAAdvAdapter import getDictionaryFromGSAAdv,loadGSAAdvFromCSVFile
 from LabEquipAdapter import getDictionaryFromLabEquipment,loadLabequipmentFromCSVFile
 from USASpendingAdapter import getDictionaryFromUSASpending,loadUSASpendingFromCSVFile
+from EDWGSAAdvAdapter import getDictionaryFromEDWGSAAdv,loadEDWGSAAdvFromCSVFile
 
 
 from os import listdir
@@ -114,10 +115,11 @@ def loadSolr(filename,transactions):
 
 # Before we load, we need to delete!
 # This seems a little dangerous, but there is not much we can do.
-
-# We really want to make this a command-line argument so 
+# We really want to make this a command-line argument so
 # that we can load one data file at a time.
-response = solrCon.delete_query('*:*')
+# Default param for SolrDeleteExistingData in ppGuiConfig is F
+if SolrDeleteExistingData=='T':
+   response = solrCon.delete_query('*:*')
 solrCon.commit()
 
 SearchApi.applyToLoadedFiles(PathToDataFiles,None,loadSolr,MAXIMUM_NUMBER_TO_LOAD)
