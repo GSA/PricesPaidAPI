@@ -2,7 +2,7 @@ import csv
 from Transaction import RawTransaction,BasicTransaction,replaceUndumpableData,UNITS, \
      PRICE,AGENCY,VENDOR,PSC,DESCR,DATE,LONGDESCR,AWARDIDIDV,DATASOURCE
 
-from Transaction import ensureZipCodeHasFiveDigits,MANUFACTURER_NAME,MANUFACTURER_PART_NUMBER,BUREAU,CONTRACT_NUMBER,TO_ZIP_CODE,FROM_ZIP_CODE,UNIT_OF_ISSUE
+from Transaction import ensureZipCodeHasFiveDigits,MANUFACTURER_NAME,MANUFACTURER_PART_NUMBER,BUREAU,CONTRACT_NUMBER,TO_ZIP_CODE,FROM_ZIP_CODE,UNIT_OF_ISSUE,EXTENDED_PRICE,PRODUCT_DESCRIPTION,QUANTITY,UNSPSC_CODE,ORDERING_PROCESS,PSC_DESCRIPTION,DUNS_NUMBER
 
 import datetime
 import calendar
@@ -22,35 +22,40 @@ def tryToInferUnitsFromDescriptionOrDefaultToOne(descr):
 def getDictionaryFromEDWGSAAdv(raw,datasource):
     try:
 # Choosing the "Charge Processing Date" as the official date"
-        #d = datetime.datetime.strptime(raw.data[6].strip(' \t\n\r'),"%m/%d/%Y")
-        d = datetime.datetime.strptime(raw.data[6].strip(' \t\n\r'),"%b %d %Y")
+        d = datetime.datetime.strptime(raw.data[5].strip(' \t\n\r'),"%m/%d/%Y")
+        #d = datetime.datetime.strptime(raw.data[5].strip(' \t\n\r'),"%b %d, %Y")
         return { \
-        DATASOURCE : datasource, \
-        UNITS : tryToInferUnitsFromDescriptionOrDefaultToOne(replaceUndumpableData(raw.data[3])), \
-        PRICE : replaceUndumpableData(raw.data[2]), \
-        AGENCY : replaceUndumpableData(raw.data[9]), \
-        VENDOR : replaceUndumpableData(raw.data[5]),    \
-    # I know all of this data is office supplies---this may not be too accurate
-    # but it matches
-        DESCR : replaceUndumpableData(raw.data[7]),   \
-        LONGDESCR : replaceUndumpableData(raw.data[7]),   \
+        AGENCY : replaceUndumpableData(raw.data[0]), \
+        AWARDIDIDV : replaceUndumpableData(raw.data[1]), \
+        BUREAU : replaceUndumpableData(raw.data[2]),   \
+        CONTRACT_NUMBER : replaceUndumpableData(raw.data[3]), \
+        DATASOURCE : replaceUndumpableData(raw.data[4]), \
         DATE : replaceUndumpableData(d.date().isoformat()), \
-        AWARDIDIDV : "GSAAdv", \
-        "GSA Schedule Number" : replaceUndumpableData(raw.data[12]),\
-        "Special Item Number" : replaceUndumpableData(raw.data[13]),\
-        MANUFACTURER_NAME : replaceUndumpableData(raw.data[1]), \
-        MANUFACTURER_PART_NUMBER : replaceUndumpableData(raw.data[0]), \
-        BUREAU : replaceUndumpableData(raw.data[10]),   \
-        CONTRACT_NUMBER : replaceUndumpableData(raw.data[11]), \
-        TO_ZIP_CODE : replaceUndumpableData(ensureZipCodeHasFiveDigits(raw.data[15])), \
-        FROM_ZIP_CODE : replaceUndumpableData(ensureZipCodeHasFiveDigits(raw.data[14]))  \
-        }
+        DESCR : replaceUndumpableData(raw.data[6]),   \
+        FROM_ZIP_CODE : replaceUndumpableData(ensureZipCodeHasFiveDigits(raw.data[7])),  \
+        LONGDESCR : replaceUndumpableData(raw.data[8]),  
+	MANUFACTURER_NAME : replaceUndumpableData(raw.data[9]), \
+	MANUFACTURER_PART_NUMBER : replaceUndumpableData(raw.data[10]), \
+	PRICE : replaceUndumpableData(raw.data[11]), \
+	PSC : replaceUndumpableData(raw.data[12]), \
+	TO_ZIP_CODE : replaceUndumpableData(ensureZipCodeHasFiveDigits(raw.data[13])), \
+	UNIT_OF_ISSUE : replaceUndumpableData(raw.data[14]), \
+	UNITS : tryToInferUnitsFromDescriptionOrDefaultToOne(replaceUndumpableData(raw.data[15])), \
+	VENDOR : replaceUndumpableData(raw.data[16]),    \
+	EXTENDED_PRICE : replaceUndumpableData(raw.data[17]), \
+	PRODUCT_DESCRIPTION : replaceUndumpableData(raw.data[18]), \
+	QUANTITY : replaceUndumpableData(raw.data[19]),
+	UNSPSC_CODE : replaceUndumpableData(raw.data[20]),
+	ORDERING_PROCESS : replaceUndumpableData(raw.data[21]), \
+	PSC_DESCRIPTION : replaceUndumpableData(raw.data[22]), \
+	DUNS_NUMBER: replaceUndumpableData(raw.data[23]), \
+	}
     except:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        traceback.print_exception(exc_type, exc_value, exc_traceback,
-                              limit=2, file=sys.stderr)
+	exc_type, exc_value, exc_traceback = sys.exc_info()
+	traceback.print_exception(exc_type, exc_value, exc_traceback,
+			      limit=2, file=sys.stderr)
         logger.error("don't know what went wrong here")
-        return {}
+	return {}
 
 def loadEDWGSAAdvFromCSVFile(filename,pattern,adapter,LIMIT_NUM_MATCHING_TRANSACTIONS):
    try:

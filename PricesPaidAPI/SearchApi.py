@@ -67,7 +67,7 @@ VERSION_ADAPTER_MAP = { '1': [loadRevAucFromCSVFile,getDictionaryFromRevAuc],
                         '3': [loadGSAAdvFromCSVFile,getDictionaryFromGSAAdv],
                         '4': [loadLabequipmentFromCSVFile,getDictionaryFromLabEquipment],
 			'5': [loadUSASpendingFromCSVFile,getDictionaryFromUSASpending],
-                        '6': [loadEDWGSAAdvFromCSVFile,getDictionaryFromEDWGSAAdv]}
+                        '8': [loadEDWGSAAdvFromCSVFile,getDictionaryFromEDWGSAAdv]}
 
 
 # This routine needs to become the basis of the SolrLodr...
