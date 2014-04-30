@@ -5,7 +5,9 @@
 
 BottlePortNumber = 8080
 BottleHostname = 'localhost'
-PathToDataFiles = "../cookedData"
+SolrDeleteExistingData = 'F'
+PathToDataFiles = "cookedData/EDW"
+PathToArchiveFiles = "cookedData/ArchiveFiles/"
 URLToPPSearchApi = "http://localhost/api"
 URLToPPSearchApiSolr = "http://localhost/apisolr"
 URLToSolr = 'http://localhost:8983/solr'

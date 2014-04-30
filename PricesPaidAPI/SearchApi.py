@@ -22,7 +22,7 @@ from os.path import isfile, join
 import re
 
 import solr
-
+import shutil
 
 import logging
 
@@ -36,8 +36,6 @@ formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
 hdlr.setFormatter(formatter)
 logger.addHandler(hdlr) 
 logger.setLevel(logging.ERROR)
-
-
 
 # This is a little dangerous.
 # I'm going to try to speed things up by caching the TransactionDirector
@@ -72,13 +70,22 @@ VERSION_ADAPTER_MAP = { '1': [loadRevAucFromCSVFile,getDictionaryFromRevAuc],
 
 # This routine needs to become the basis of the SolrLodr...
 
-def applyToLoadedFiles(dirpath,pattern,funToApply,maximumToLoad = ppApiConfig.LIMIT_NUM_MATCHING_TRANSACTIONS,version_adapter_map = VERSION_ADAPTER_MAP):
+def applyToLoadedFiles(archivepath,dirpath,pattern,funToApply,maximumToLoad = ppApiConfig.LIMIT_NUM_MATCHING_TRANSACTIONS,version_adapter_map = VERSION_ADAPTER_MAP):
     print "maximumToLoad "+  str(maximumToLoad)
     onlyfiles = [ f for f in listdir(dirpath) if isfile(join(dirpath,f)) ]
-    onlycsvfiles = [ f for f in onlyfiles if re.search(".csv$",f)]
+    onlycsvfiles = [ f for f in onlyfiles if re.search(".csv$",f)] 
+    firsttime = True
+    import time
     for filename in onlycsvfiles:
         transactions = []
         print filename
+	#This creates a error file for each feeed and not for each part file
+	if firsttime:
+	   time = time.strftime("%H:%M:%S")
+           errorfile_name = "../logs/errorfile-"+filename+'-'+time
+	   errorfile = open(errorfile_name,"w")
+	   firsttime = False
+
         if len(transactions) > maximumToLoad:
             print "WEIRD!"
             break
@@ -97,7 +104,7 @@ def applyToLoadedFiles(dirpath,pattern,funToApply,maximumToLoad = ppApiConfig.LI
                 loader = v[0]
                 adapter = v[1]
                 transactions.extend(loader(dirpath+"/"+filename,\
-                     pattern, adapter,maximumToLoad))
+                     pattern, adapter,maximumToLoad,errorfile))
 
                 logger.info('Total Number Transactions Read From File'+filename \
                                 +str(len(transactions)))
@@ -105,6 +112,9 @@ def applyToLoadedFiles(dirpath,pattern,funToApply,maximumToLoad = ppApiConfig.LI
             else:
                 logger.error('Unknown version')
                 raise Exception('Unknown Format Version')
+    if not firsttime:
+       errorfile.close()
+       processerrorfile(errorfile_name,dirpath,archivepath)
 
 # Probably want to replace with the above lambda-lift
 def loadDirectory(dirpath,pattern,version_adapter_map = VERSION_ADAPTER_MAP):
@@ -155,6 +165,7 @@ def searchApiSolr(URLToSolr,pathToData,search_string,psc_pattern,limit=ppApiConf
     t1 = time.clock()
 
     logger.info("Searching for search_string,psc" + search_string+","+psc_pattern)
+    logger.error("Searching for search_string,psc" + search_string+","+psc_pattern)
     
     # do a search
     mainSearch = AGGREGATED_TEXT_FIELD+':'+search_string
@@ -188,7 +199,9 @@ def getP3ids(URLToSolr,pathToData,p3idsPickled,limit=ppApiConfig.LIMIT_NUM_MATCH
 
 def processSolrResults(transactionDicts):
     # This is a duplication that must be removed with the above.
+    logger.error('TransactionDicts = {0}'.format(transactionDicts))
     for hit in transactionDicts.results:
+        logger.error('hit = {0}'.format(hit))
         # massage the score a little bit --- could normalize to
         # 100% to make a little nicer in the future...
         hit['score'] = int(Decimal(str(hit['score']*100)).quantize(Decimal('1'), rounding=ROUND_UP))
@@ -208,3 +221,26 @@ def processSolrResults(transactionDicts):
     
     numberedTransactionDict = dict(zip(range(0, len(transactionDicts)),transactionDicts))
     return numberedTransactionDict
+
+def processerrorfile(errorfile_name, dirpath, archivepath):
+    print 'Archiving Files Started'
+    listoffiles = []
+    with open(errorfile_name, 'r') as inpfile:
+	for line in inpfile:
+            listoffiles.append(line.split(':::')[1].strip())
+
+    allerrorfiles = list(set(listoffiles))
+    
+    onlyfiles = [ f for f in listdir(dirpath) if isfile(join(dirpath,f)) ]
+    onlycsvfiles = [ f for f in onlyfiles if re.search(".csv$",f)]
+    for each in onlycsvfiles:
+	if each in allerrorfiles:
+    	   shutil.move(dirpath+'/'+each , archivepath+'/ErrorFiles')
+        else:
+           shutil.move(dirpath+'/'+each , archivepath+'/SplitFiles')
+ 
+    onlyfiles = [ f for f in listdir('./cookedData') if isfile(join('./cookedData',f))]
+    onlycsvfiles = [ f for f in onlyfiles if re.search(".csv$",f)]
+    shutil.move('./cookedData/'+onlycsvfiles[0], archivepath+'/InputFiles')
+    print 'Archiving Files Ended'
+
