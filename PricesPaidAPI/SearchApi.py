@@ -70,7 +70,7 @@ VERSION_ADAPTER_MAP = { '1': [loadRevAucFromCSVFile,getDictionaryFromRevAuc],
 
 # This routine needs to become the basis of the SolrLodr...
 
-def applyToLoadedFiles(archivepath,dirpath,pattern,funToApply,maximumToLoad = ppApiConfig.LIMIT_NUM_MATCHING_TRANSACTIONS,version_adapter_map = VERSION_ADAPTER_MAP):
+def applyToLoadedFiles(dirpath,pattern,funToApply,maximumToLoad = ppApiConfig.LIMIT_NUM_MATCHING_TRANSACTIONS,version_adapter_map = VERSION_ADAPTER_MAP):
     print "maximumToLoad "+  str(maximumToLoad)
     onlyfiles = [ f for f in listdir(dirpath) if isfile(join(dirpath,f)) ]
     onlycsvfiles = [ f for f in onlyfiles if re.search(".csv$",f)] 
@@ -114,7 +114,7 @@ def applyToLoadedFiles(archivepath,dirpath,pattern,funToApply,maximumToLoad = pp
                 raise Exception('Unknown Format Version')
     if not firsttime:
        errorfile.close()
-       processerrorfile(errorfile_name,dirpath,archivepath)
+       processerrorfile(errorfile_name,dirpath)
 
 # Probably want to replace with the above lambda-lift
 def loadDirectory(dirpath,pattern,version_adapter_map = VERSION_ADAPTER_MAP):
@@ -222,7 +222,7 @@ def processSolrResults(transactionDicts):
     numberedTransactionDict = dict(zip(range(0, len(transactionDicts)),transactionDicts))
     return numberedTransactionDict
 
-def processerrorfile(errorfile_name, dirpath, archivepath):
+def processerrorfile(errorfile_name, dirpath):
     print 'Archiving Files Started'
     listoffiles = []
     with open(errorfile_name, 'r') as inpfile:
@@ -235,12 +235,13 @@ def processerrorfile(errorfile_name, dirpath, archivepath):
     onlycsvfiles = [ f for f in onlyfiles if re.search(".csv$",f)]
     for each in onlycsvfiles:
 	if each in allerrorfiles:
-    	   shutil.move(dirpath+'/'+each , archivepath+'/ErrorFiles')
+    	   shutil.move(dirpath+'/'+each , ppApiConfig.PathToArchiveErrorFiles)
         else:
-           shutil.move(dirpath+'/'+each , archivepath+'/SplitFiles')
+           shutil.move(dirpath+'/'+each , ppApiConfig.PathToArchiveSplitFiles)
  
-    onlyfiles = [ f for f in listdir('./cookedData') if isfile(join('./cookedData',f))]
+    onlyfiles = [ f for f in listdir(ppApiConfig.PathToActualInputFiles) if isfile(join(ppApiConfig.PathToActualInputFiles,f))]
     onlycsvfiles = [ f for f in onlyfiles if re.search(".csv$",f)]
-    shutil.move('./cookedData/'+onlycsvfiles[0], archivepath+'/InputFiles')
+    for each in onlycsvfiles:
+	    shutil.move(ppApiConfig.PathToActualInputFiles + '/' + each, ppApiConfig.PathToArchiveInputFiles)
     print 'Archiving Files Ended'
 
