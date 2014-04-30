@@ -60,7 +60,7 @@ def getDictionaryFromRevAuc(raw,datasource):
 # I think this will be better made into a pure function and
 # perhaps actually separated into particular formats (to
 # allow more override flexibility, like skipping the first row.)
-def loadRevAucFromCSVFile(filename,pattern,adapter,LIMIT_NUM_MATCHING_TRANSACTIONS):
+def loadRevAucFromCSVFile(filename,pattern,adapter,LIMIT_NUM_MATCHING_TRANSACTIONS,error_file):
     try:
         transactions = []
         with open(filename, 'rb') as f:

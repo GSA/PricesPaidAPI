@@ -26,7 +26,7 @@ import sys, os
 import Transaction
 import time
 
-from ppApiConfig import PathToDataFiles, MAXIMUM_NUMBER_TO_LOAD, SolrDeleteExistingData
+from ppApiConfig import PathToArchiveFiles, PathToDataFiles, MAXIMUM_NUMBER_TO_LOAD, SolrDeleteExistingData
 
 # Note: For now, these are explict imports.
 # Evntually, we want to make this automatic, and essentially
@@ -121,5 +121,4 @@ def loadSolr(filename,transactions):
 if SolrDeleteExistingData=='T':
    response = solrCon.delete_query('*:*')
 solrCon.commit()
-
-SearchApi.applyToLoadedFiles(PathToDataFiles,None,loadSolr,MAXIMUM_NUMBER_TO_LOAD)
+SearchApi.applyToLoadedFiles(PathToArchiveFiles,PathToDataFiles,None,loadSolr,MAXIMUM_NUMBER_TO_LOAD)

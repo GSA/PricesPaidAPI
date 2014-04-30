@@ -9,7 +9,9 @@ import calendar
 
 import sys, traceback
 import logging
+import time
 import os
+from time import gmtime, strftime
 
 logger = logging.getLogger('PricesPaidTrans')
 hdlr = logging.FileHandler('../logs/PricesPaidTrans.log')
@@ -57,8 +59,9 @@ def getDictionaryFromEDWGSAAdv(raw,datasource):
         logger.error("don't know what went wrong here")
 	return {}
 
-def loadEDWGSAAdvFromCSVFile(filename,pattern,adapter,LIMIT_NUM_MATCHING_TRANSACTIONS):
+def loadEDWGSAAdvFromCSVFile(filename,pattern,adapter,LIMIT_NUM_MATCHING_TRANSACTIONS,error_file):
    try:
+        print 'filename = {0}'.format(filename)
         logger.error('EDWGSAAdv reader opened:'+filename)
         transactions = []
         with open(filename, 'rb') as f:
@@ -85,6 +88,8 @@ def loadEDWGSAAdvFromCSVFile(filename,pattern,adapter,LIMIT_NUM_MATCHING_TRANSAC
                 except:
                     print "Error on this row:"
                     print repr(row)
+		    if i <> 0:
+		       error_file.write('filename::: {0}'.format(basename) + ':::' +'record ::: {0}'.format(repr(row))+'\n')
         return transactions
    except IOError as e:
         print "I/O error({0}): {1}".format(e.errno, e.strerror)

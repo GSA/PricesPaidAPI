@@ -48,7 +48,7 @@ def getDictionaryFromLabEquipment (raw, datasource):
         logger.error("don't know what went wrong here")
         
     #other data fields can still be included    
-def loadLabequipmentFromCSVFile(filename,pattern,adapter,LIMIT_NUM_MATCHING_TRANSACTIONS):
+def loadLabequipmentFromCSVFile(filename,pattern,adapter,LIMIT_NUM_MATCHING_TRANSACTIONS,errorfile):
     try:
         transactions = []
         with open(filename, 'rb') as f:

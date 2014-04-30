@@ -92,7 +92,7 @@ def getDictionaryFromOS2(raw,datasource):
         logger.error("don't know what went wrong here")
         return {}
 
-def loadOS2FromCSVFile(filename,pattern,adapter,LIMIT_NUM_MATCHING_TRANSACTIONS):
+def loadOS2FromCSVFile(filename,pattern,adapter,LIMIT_NUM_MATCHING_TRANSACTIONS,errorfile):
    try:
         logger.error('OS2 reader opened:'+filename)
         transactions = []

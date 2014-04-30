@@ -58,7 +58,7 @@ def getDictionaryFromUSASpending(raw,datasource):
         logger.error("don't know what went wrong here")
         return {}
 
-def loadUSASpendingFromCSVFile(filename,pattern,adapter,LIMIT_NUM_MATCHING_TRANSACTIONS):
+def loadUSASpendingFromCSVFile(filename,pattern,adapter,LIMIT_NUM_MATCHING_TRANSACTIONS,errorfile):
    try:
         logger.error('USASpending reader opened:'+filename)
         transactions = []

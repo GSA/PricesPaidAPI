@@ -51,7 +51,7 @@ def getDictionaryFromGSAAdv(raw,datasource):
         return {}
 
 
-def loadGSAAdvFromCSVFile(filename,pattern,adapter,LIMIT_NUM_MATCHING_TRANSACTIONS):
+def loadGSAAdvFromCSVFile(filename,pattern,adapter,LIMIT_NUM_MATCHING_TRANSACTIONS,errorfile):
    try:
         logger.error('GSAAdv reader opened:'+filename)
         transactions = []
