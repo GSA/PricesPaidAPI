@@ -8,17 +8,18 @@ import subprocess
 
 from os import listdir
 from os.path import isfile, join
+fileslocation = '../cookedData'
+splitfileslocation = '../cookedData/EDW'
 
 process = subprocess.Popen("sh split.sh",shell=True)
 process.wait()
-onlyfiles = [ f for f in listdir('./cookedData') if isfile(join('./cookedData',f)) ]
+onlyfiles = [ f for f in listdir(fileslocation) if isfile(join(fileslocation,f)) ]
 onlycsvfiles = [ f for f in onlyfiles if re.search(".csv(\d+)",f)]
-shutil.rmtree('cookedData/EDW')
-os.mkdir('cookedData/EDW')
-
-os.chdir('./cookedData')
+shutil.rmtree(splitfileslocation)
+os.mkdir(splitfileslocation)
+os.chdir(fileslocation)
 for filename in onlycsvfiles:
-	if filename[-2:] == '00':
+	if filename[-4:] == '0000':
 		with open(filename) as myfile:
 			reader = csv.reader(myfile)
 			for row in reader:
@@ -29,13 +30,13 @@ for filename in onlycsvfiles:
 	else:
 		rename_file = filename[-4:] + '_' + filename[0:len(filename)-4] + '_header_no'
 	os.rename(filename,rename_file)
- 	shutil.move(rename_file,'./EDW/')
+ 	shutil.move(rename_file,splitfileslocation)
  
 
-onlyfiles = [ f for f in listdir('./EDW') if isfile(join('./EDW',f)) ]
+onlyfiles = [ f for f in listdir(splitfileslocation) if isfile(join(splitfileslocation,f)) ]
 onlycsvfiles = [ f for f in onlyfiles if re.search(".csv_header*",f)]
 
-os.chdir('./EDW')
+os.chdir(splitfileslocation)
 for filename in onlycsvfiles:
 	if filename[0:4] == '0000':
 		rename_file = filename[0:len(filename)-7]
