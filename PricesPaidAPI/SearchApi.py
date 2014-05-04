@@ -70,7 +70,8 @@ VERSION_ADAPTER_MAP = { '1': [loadRevAucFromCSVFile,getDictionaryFromRevAuc],
 
 # This routine needs to become the basis of the SolrLodr...
 
-def applyToLoadedFiles(dirpath,pattern,funToApply,maximumToLoad = ppApiConfig.LIMIT_NUM_MATCHING_TRANSACTIONS,version_adapter_map = VERSION_ADAPTER_MAP):
+def applyToLoadedFiles(actualinputfile,dirpath,pattern,funToApply,maximumToLoad = ppApiConfig.LIMIT_NUM_MATCHING_TRANSACTIONS,version_adapter_map = VERSION_ADAPTER_MAP):
+    import os
     print "maximumToLoad "+  str(maximumToLoad)
     onlyfiles = [ f for f in listdir(dirpath) if isfile(join(dirpath,f)) ]
     onlycsvfiles = [ f for f in onlyfiles if re.search(".csv$",f)] 
@@ -80,12 +81,10 @@ def applyToLoadedFiles(dirpath,pattern,funToApply,maximumToLoad = ppApiConfig.LI
         transactions = []
         print filename
 	#This creates a error file for each feeed and not for each part file
-	if firsttime:
-	   time = time.strftime("%H:%M:%S")
-           errorfile_name = "../logs/errorfile-"+filename+'-'+time
-	   errorfile = open(errorfile_name,"w")
-	   firsttime = False
-
+	time = time.strftime("%H:%M:%S")
+        errorfile_name = "../error/errorfile-"+filename+'-'+time
+	errorfile = open(errorfile_name,"w")
+        firsttime = False
         if len(transactions) > maximumToLoad:
             print "WEIRD!"
             break
@@ -109,12 +108,13 @@ def applyToLoadedFiles(dirpath,pattern,funToApply,maximumToLoad = ppApiConfig.LI
                 logger.info('Total Number Transactions Read From File'+filename \
                                 +str(len(transactions)))
                 funToApply(filename,transactions)
+                processerrorfile(errorfile_name,dirpath, filename)
             else:
                 logger.error('Unknown version')
                 raise Exception('Unknown Format Version')
     if not firsttime:
        errorfile.close()
-       processerrorfile(errorfile_name,dirpath)
+       archiveinputfile(actualinputfile)
 
 # Probably want to replace with the above lambda-lift
 def loadDirectory(dirpath,pattern,version_adapter_map = VERSION_ADAPTER_MAP):
@@ -222,26 +222,30 @@ def processSolrResults(transactionDicts):
     numberedTransactionDict = dict(zip(range(0, len(transactionDicts)),transactionDicts))
     return numberedTransactionDict
 
-def processerrorfile(errorfile_name, dirpath):
+def processerrorfile(errorfile_name, dirpath, filename):
     print 'Archiving Files Started'
-    listoffiles = []
-    with open(errorfile_name, 'r') as inpfile:
-	for line in inpfile:
-            listoffiles.append(line.split(':::')[1].strip())
+    #listoffiles = []
+    #with open(errorfile_name, 'r') as inpfile:
+    #	for line in inpfile:
+    #        listoffiles.append(line.split(':::')[1].strip())
 
-    allerrorfiles = list(set(listoffiles))
+    #allerrorfiles = list(set(listoffiles))
     
-    onlyfiles = [ f for f in listdir(dirpath) if isfile(join(dirpath,f)) ]
-    onlycsvfiles = [ f for f in onlyfiles if re.search(".csv$",f)]
-    for each in onlycsvfiles:
-	if each in allerrorfiles:
-    	   shutil.move(dirpath+'/'+each , ppApiConfig.PathToArchiveErrorFiles)
-        else:
-           shutil.move(dirpath+'/'+each , ppApiConfig.PathToArchiveSplitFiles)
- 
-    onlyfiles = [ f for f in listdir(ppApiConfig.PathToActualInputFiles) if isfile(join(ppApiConfig.PathToActualInputFiles,f))]
-    onlycsvfiles = [ f for f in onlyfiles if re.search(".csv$",f)]
-    for each in onlycsvfiles:
-	    shutil.move(ppApiConfig.PathToActualInputFiles + '/' + each, ppApiConfig.PathToArchiveInputFiles)
+    #onlyfiles = [ f for f in listdir(dirpath) if isfile(join(dirpath,f)) ]
+    #onlycsvfiles = [ f for f in onlyfiles if re.search(".csv$",f)]
+    #for each in onlycsvfiles:
+    #	if each in allerrorfiles:
+    # 	   shutil.move(dirpath+'/'+each , ppApiConfig.PathToArchiveErrorFiles)
+    #    else:
+    #       shutil.move(dirpath+'/'+each , ppApiConfig.PathToArchiveSplitFiles)
+    with open(errorfile_name) as inpfile:
+	    file_count = len(inpfile.readlines())
+    if file_count > 0:
+       shutil.move(dirpath+'/'+filename , ppApiConfig.PathToArchiveErrorFiles)
+    else:
+       shutil.move(dirpath+'/'+filename , ppApiConfig.PathToArchiveSplitFiles)
+
+def archiveinputfile(actualinputfile):
+    shutil.move(ppApiConfig.PathToActualInputFiles + '/' + actualinputfile, ppApiConfig.PathToArchiveInputFiles)
     print 'Archiving Files Ended'
 

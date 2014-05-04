@@ -26,7 +26,7 @@ import sys, os
 import Transaction
 import time
 
-from ppApiConfig import PathToDataFiles, MAXIMUM_NUMBER_TO_LOAD, SolrDeleteExistingData
+from ppApiConfig import PathToDataFiles, MAXIMUM_NUMBER_TO_LOAD, SolrDeleteExistingData, PathToActualInputFiles
 
 # Note: For now, these are explict imports.
 # Evntually, we want to make this automatic, and essentially
@@ -39,6 +39,7 @@ from GSAAdvAdapter import getDictionaryFromGSAAdv,loadGSAAdvFromCSVFile
 from LabEquipAdapter import getDictionaryFromLabEquipment,loadLabequipmentFromCSVFile
 from USASpendingAdapter import getDictionaryFromUSASpending,loadUSASpendingFromCSVFile
 from EDWGSAAdvAdapter import getDictionaryFromEDWGSAAdv,loadEDWGSAAdvFromCSVFile
+from csv_rename import splitfiles
 
 
 from os import listdir
@@ -121,4 +122,13 @@ def loadSolr(filename,transactions):
 if SolrDeleteExistingData=='T':
    response = solrCon.delete_query('*:*')
 solrCon.commit()
-SearchApi.applyToLoadedFiles(PathToDataFiles,None,loadSolr,MAXIMUM_NUMBER_TO_LOAD)
+print "Solr Loader Starts"
+onlyfiles = [ f for f in listdir(PathToActualInputFiles) if isfile(join(PathToActualInputFiles,f)) ]
+onlycsvfiles = [ f for f in onlyfiles if re.search(".csv$",f)]
+
+for filename in onlycsvfiles:
+  	splitfiles(filename)
+	SearchApi.applyToLoadedFiles(filename,PathToDataFiles,None,loadSolr,MAXIMUM_NUMBER_TO_LOAD)
+print "Solr Loader Ends"
+
+
