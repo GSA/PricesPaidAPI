@@ -79,10 +79,10 @@ def applyToLoadedFiles(actualinputfile,dirpath,pattern,funToApply,maximumToLoad 
     import time
     for filename in onlycsvfiles:
         transactions = []
-        print filename
+        print 'Processing filename =', filename
 	#This creates a error file for each feeed and not for each part file
-	time = time.strftime("%H:%M:%S")
-        errorfile_name = "../error/errorfile-"+filename+'-'+time
+	curr_time = time.strftime("%H:%M:%S")
+        errorfile_name = "../error/errorfile-"+filename+'-'+curr_time
 	errorfile = open(errorfile_name,"w")
         firsttime = False
         if len(transactions) > maximumToLoad:
@@ -223,7 +223,7 @@ def processSolrResults(transactionDicts):
     return numberedTransactionDict
 
 def processerrorfile(errorfile_name, dirpath, filename):
-    print 'Archiving Files Started'
+    print 'Archiving Error & Split Files Started'
     #listoffiles = []
     #with open(errorfile_name, 'r') as inpfile:
     #	for line in inpfile:
@@ -244,8 +244,10 @@ def processerrorfile(errorfile_name, dirpath, filename):
        shutil.move(dirpath+'/'+filename , ppApiConfig.PathToArchiveErrorFiles)
     else:
        shutil.move(dirpath+'/'+filename , ppApiConfig.PathToArchiveSplitFiles)
+    print 'Archiving Error & Split Files Ended'
 
 def archiveinputfile(actualinputfile):
+    print 'Archiving Input files started'
     shutil.move(ppApiConfig.PathToActualInputFiles + '/' + actualinputfile, ppApiConfig.PathToArchiveInputFiles)
-    print 'Archiving Files Ended'
+    print 'Archiving Input files Ended'
 

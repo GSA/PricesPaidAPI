@@ -24,8 +24,8 @@ def tryToInferUnitsFromDescriptionOrDefaultToOne(descr):
 def getDictionaryFromEDWGSAAdv(raw,datasource):
     try:
 # Choosing the "Charge Processing Date" as the official date"
-        d = datetime.datetime.strptime(raw.data[5].strip(' \t\n\r'),"%m/%d/%Y")
-        #d = datetime.datetime.strptime(raw.data[5].strip(' \t\n\r'),"%b %d, %Y")
+        #d = datetime.datetime.strptime(raw.data[5].strip(' \t\n\r'),"%m/%d/%Y")
+        d = datetime.datetime.strptime(raw.data[5].strip(' \t\n\r'),"%b %d %Y")
         return { \
         AGENCY : replaceUndumpableData(raw.data[0]), \
         AWARDIDIDV : replaceUndumpableData(raw.data[1]), \
