@@ -81,7 +81,7 @@ def applyToLoadedFiles(actualinputfile,dirpath,pattern,funToApply,maximumToLoad 
         transactions = []
         print 'Processing filename =', filename
 	#This creates a error file for each feeed and not for each part file
-	curr_time = time.strftime("%H:%M:%S")
+	curr_time = time.strftime("%Y-%m-%d-%H-%M-%S")
         errorfile_name = "../error/errorfile-"+filename+'-'+curr_time
 	errorfile = open(errorfile_name,"w")
         firsttime = False
