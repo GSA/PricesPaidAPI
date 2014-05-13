@@ -26,7 +26,7 @@ import sys, os
 import Transaction
 import time
 
-from ppApiConfig import PathToDataFiles, MAXIMUM_NUMBER_TO_LOAD, SolrDeleteExistingData, PathToActualInputFiles
+from ppApiConfig import PathToDataFiles, MAXIMUM_NUMBER_TO_LOAD, SolrDeleteExistingData, PathToActualInputFiles, URLToSolr
 
 # Note: For now, these are explict imports.
 # Evntually, we want to make this automatic, and essentially
@@ -61,7 +61,7 @@ LIMIT_NUM_MATCHING_TRANSACTIONS = 5000*1000*100;
 
 # create a connection to a solr server
 # This needs to come from ppconfig
-solrCon = solr.SolrConnection('http://localhost:8983/solr')
+solrCon = solr.SolrConnection(URLToSolr)
 
 def chunks(l, n):
     """ Yield successive n-sized chunks from l.
