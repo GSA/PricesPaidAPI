@@ -1,0 +1,29 @@
+# This file is responsible for checking secure hashes
+# against configured user/password sistuations.
+
+import pickle
+import hashlib
+
+# Load from disk
+pwd_file = "mypasswords"
+if os.path.exists(pwd_file):
+    pwds = pickle.load(open(pwd_file, "rb"))
+else:
+    pwds = {}
+
+# Save to disk
+pickle.dump(pwds, open(pwd_file, "wb"))
+
+# Add password
+pwds[username] = hashlib.sha256(password).hexdigest()
+
+
+def does_authenticate(username,password):
+    # Check password
+    if pwds[username] = hashlib.sha256(password).hexdigest():
+        print "Good"
+        return true;
+    else:
+        print "No match"
+        # here we should log the failure.
+        return false;

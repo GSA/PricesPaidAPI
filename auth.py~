@@ -1,0 +1,6 @@
+# This file is responsible for checking secure hashes
+# against configured user/password sistuations.
+from ppApiConfig import PasswordHashDictionary
+
+def does_authenticate(user,password):
+    return (user == MasterUsername and password == MasterPassword)

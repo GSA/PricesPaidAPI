@@ -1,0 +1,159 @@
+#!/usr/local/bin/python
+
+import solr
+import sys, traceback
+
+
+# This file is for (for example) Apache with mod_wsgi.
+import sys, os
+
+import sys
+sys.path.insert(0, '../configuration/')
+
+# The purpose of this file is to take the standard
+# datafiles and load them into SOLR in such a way that they
+# will be searchable.
+# This is meant to be run from a command line because
+# I assume it is to be invoked when you change the
+# source data directory, which implies you are changing
+# files and it will be easy to run it from a command line.
+# Later, we can wrap this into something that allows
+# a file to be uploaded through the API.
+# We may someday need to manage the SOLR index with
+# an administrative interface, but for now the goal is
+# just to make it reflect the directory.  I'm assuming
+# those are the simplest way to do these things.
+import Transaction
+import time
+
+from ppconfig import PathToDataFiles
+
+# Note: For now, these are explict imports.
+# Evntually, we want to make this automatic, and essentially
+# create a dynamic array of adapters and loaders based on
+# what we find in some directory so that it is easily
+# extendable.  But that would be over-engineering if we did it now.
+from FedBidAdapter import getDictionaryFromFedBid,loadFedBidFromCSVFile
+from OS2Adapter import getDictionaryFromOS2,loadOS2FromCSVFile
+from os import listdir
+from os.path import isfile, join
+import re
+
+import logging
+logger = logging.getLogger('PPSolrLodr')
+hdlr = logging.FileHandler('/var/tmp/PPSolrLodr.log')
+formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+hdlr.setFormatter(formatter)
+logger.addHandler(hdlr) 
+logger.setLevel(logging.ERROR)
+
+LIMIT_NUM_MATCHING_TRANSACTIONS = 5000*1000
+
+# This routine needs to become the basis of the SolrLodr...
+# Eventually the same routine in SearchApi should probably be rewritten
+# to use this.
+
+# This should be rewritten to take the function that applies the
+# operations out, which will spearate the traversal logic from the
+# other work.
+
+# create a connection to a solr server
+solrCon = solr.SolrConnection('http://localhost:8983/solr')
+
+# add a document to the index
+# doc = {
+#     "id": '99999999999',
+#    "b":'spud'
+#    }
+# print repr(doc)
+# print "xxx"
+# s.add(id='99999999999',b='spud')
+# s.commit()
+
+# s.add_many( [ {'id': '1000000000', 'f': 'foobar357'},
+#               {'id': '1000000001', 'f': 'foobar358'} ] )
+# s.commit()
+
+
+# response = s.query('f:foobar357*')
+# print repr(response.results)
+# for hit in response.results:
+#    print repr(hit)
+
+
+
+# If on Python 2.X
+# from __future__ import print_function
+# import pysolr
+
+
+idcnt = 0;
+def loadSolr(transactions):
+    global idcnt;
+    for t in transactions:
+        d = {}
+        # we need to look at the dictionary and map
+        # non standard fields to those matching our "dynamic field" name
+        # in the schema.
+        for key, value in t.dict.items():
+            if (key in Transaction.STANDARD_FIELDS):
+              d[key] = value;
+#            else:
+#              d[key+"_t"] = value;
+
+        # possibly the addtion of this id field should actually be done
+        # when we create the objects!  That would make the class useful!
+        d['id'] = idcnt;
+        idcnt = idcnt+1;
+
+        l = []
+        l.append(d);
+        try:
+          solrCon.add_many(l)
+          solrCon.commit()
+          print "succes"
+        except:
+          logger.error("don't know what went wrong here")
+
+    
+# use a pattern of "None" to get all rows...
+def loadDirectory(dirpath,pattern):
+    onlyfiles = [ f for f in listdir(dirpath) if isfile(join(dirpath,f)) ]
+    onlycsvfiles = [ f for f in onlyfiles if re.search(".csv$",f)]
+    for filename in onlycsvfiles:
+        transactions = []
+        if len(transactions) > LIMIT_NUM_MATCHING_TRANSACTIONS:
+            break
+        version = Transaction.parseFormatVersion(filename)
+        if not version:
+             logger.error('File in wrong format: '+dirpath+filename)
+        else:
+            # FedBid data has number 1
+            # This would be better with a functional "cond" type operator
+            adapter = None
+            logger.info('version:'+version)
+            # We need here, if this is the first occurence, to
+            # dynamically add fields to SOLR to correspond to this format.
+            # But perhaps I don't need to get that done in the first version.
+            
+            if (version == '1'):
+                adapter = getDictionaryFromFedBid
+                transactions.extend(loadFedBidFromCSVFile(dirpath+"/"+filename,\
+                     pattern, adapter,LIMIT_NUM_MATCHING_TRANSACTIONS))
+            elif (version == '2'):
+                adapter = getDictionaryFromOS2
+                transactions.extend(loadOS2FromCSVFile(dirpath+"/"+filename,\
+                     pattern, adapter,LIMIT_NUM_MATCHING_TRANSACTIONS))
+            else:
+                logger.error('Unknown version')
+                raise Exception('Unknown Format Version')
+        # now, having read in a batch of transactions, let's send
+        # to SOLR.
+        loadSolr(transactions);
+
+    logger.info('Total Number Transactions Read From Directory' \
+        +str(len(transactions)))
+    return transactions
+
+
+loadDirectory(PathToDataFiles,None)
