@@ -1,0 +1,68 @@
+9:24 am
+
+Got up early and started working.  I think I have 
+found a pretty elegant way to make make the OS2 data work
+with the FedBid data.
+
+TODO:
+
+* My graph is not drawing in all cases, need to figure that out - x
+* Need to construct the other fields from OS2 - partial
+* Perhaps Dollars in field are messing it up. - yes
+* Performance is getting to be a problem.  Need to consider:
+1) leaving everything in memory
+2) SOLR index is probably a valuable next step
+3) Adding limitation 
+* Need to add shared javascript/python simbol table.
+
+
+* Need to Make graph bigger.
+* Why is the legend table so awful?
+* How can use color effectively?
+* Need to create a "fielded" detail display which is 
+better
+* Need to investigate the PSC code, do all Office Supplies get one? - yes
+* Need to investigate AwardID/IDV, is it the same as agency?
+
+* Need to allow sorting of grid by columns
+* Need to create create product description abbreviation
+* Need to add Date as a standard field?
+* Need to figure out AWS---not sure how that compares in 
+importance.
+
+Priorities:
+
+* Make graph bigger x
+* Make Legend better x 
+* Remove to 20% x
+
+5:10 Sunday night.
+
+Data issues remain.  The fielded data is probably the biggest issue,
+and then filling in the Commodity Type and Award ID/IDV field if I 
+can.  But before I do that, I need to take a break and decide what 
+else to do tonight.
+
+July 24th 9:21
+
+Have just done a git init.  Will now test.
+
+July 25th 8:45
+
+Priorities:
+* Attack Marty's desgin. x
+1 Use color effectively x
+2 Allow clicking on Marty's Icons
+3 Use Slickgrid mini-format example to allow huge scrolling
+4 Make better fielded detail display
+5 Separate standard fields out into a separate class that includes titles.
+6 Put the date in (survive it being missing)
+7 Tie all javacript together
+8 Implement SOLR indexing.
+9 Move jqplot out
+10 work on getting git-hub ready.
+11 
+
+
+
+

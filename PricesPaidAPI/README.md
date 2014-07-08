@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 PricesPaidAPI
 =============
 
@@ -116,9 +115,3 @@ in ppcofig.example.py.  I have added it here only as an example.
 correct (not example) cookedData directory, will allow the execution of "python SolrLodr.py"
 to load 23K records of completely public data for testing your own site.
 
-=======
-P3-API
-======
-
-Prices Paid Portal API
->>>>>>> 517b68f57bbcd69c0e36105d0500c6d00cadd786
