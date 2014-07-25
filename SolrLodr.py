@@ -121,7 +121,7 @@ def loadSolr(filename,transactions):
 # Default param for SolrDeleteExistingData in ppGuiConfig is F
 if SolrDeleteExistingData=='T':
    response = solrCon.delete_query('*:*')
-solrCon.commit()
+   solrCon.commit()
 print "Solr Loader Starts"
 onlyfiles = [ f for f in listdir(PathToActualInputFiles) if isfile(join(PathToActualInputFiles,f)) ]
 onlycsvfiles = [ f for f in onlyfiles if re.search(".csv$",f)]
