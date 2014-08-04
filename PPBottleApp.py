@@ -45,11 +45,11 @@ def convertSearchStringToLegalPattern(str):
         return str;
 
 def processSearchRequest(user,password,search_string,
-                         psc_pattern,numRows = LIMIT_NUM_MATCHING_TRANSACTIONS):
+                         psc_pattern,remote_addr,numRows = LIMIT_NUM_MATCHING_TRANSACTIONS):
     global P3APISALT
     if (P3APISALT is None):
         P3APISALT=os.environ.get("P3APISALT")
-    if (not P3Auth.auth.does_authenticate(user,password,P3APISALT)):
+    if (not P3Auth.auth.does_authenticate(user,password,P3APISALT,remote_addr)):
         dict = {0: {"status": "BadAuthentication"}}
         logger.error('Bad Authentication Request '+ repr(user))
         return dict;
@@ -132,8 +132,9 @@ def apisolr():
     search_string = request.forms.get('search_string')
     psc_pattern = request.forms.get('psc_pattern')
     max_results = request.forms.get('numRows')
+    remote_addr = request.forms.get('remote_addr')
     logger.error('Normal post called '+ repr(user))
-    return processSearchRequest(user,password,search_string,psc_pattern,max_results)
+    return processSearchRequest(user,password,search_string,psc_pattern,remote_addr,max_results)
 
 def processFromIds(user,password,p3ids,numRows = LIMIT_NUM_MATCHING_TRANSACTIONS):
     global P3APISALT

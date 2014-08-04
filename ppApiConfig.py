@@ -14,7 +14,8 @@ URLToSolr = 'http://localhost:8983/solr'
 RelativePathToHashesFile = "../configuration/p3api.hashes.txt"
 
 # I'm going to use a 10-minute timeout
-TokenTimeout = 600
+TokenTimeout = 600 * 2
+TokenTimeout = 300
 
 
 LIMIT_NUMBER_BAD_LOGINS = 5

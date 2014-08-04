@@ -171,7 +171,6 @@ def searchApiSolr(URLToSolr,pathToData,search_string,psc_pattern,limit=ppApiConf
     # do a search
     mainSearch = AGGREGATED_TEXT_FIELD+':'+search_string
     pscSearch = Transaction.PSC+':'+psc_pattern
-
     # the magic happens here...
     # you can add q_op='AND' here, but it seems to shut down all instances.  I'm afraid
     # I either need to use ediscmax or do something else.
@@ -205,12 +204,6 @@ def processSolrResults(transactionDicts):
         # 100% to make a little nicer in the future...
         hit['score'] = int(Decimal(str(hit['score']*100)).quantize(Decimal('1'), rounding=ROUND_UP))
         hit['p3id'] = hit['id']
-        #hit['unitPrice'] = hit['unitPrice'].rstrip('0')
-        #hit['unitPrice'] = '$' + '{:,}'.format(float(hit['unitPrice']))
-        #print 'after unitPrice = ', hit['unitPrice']
-        #hit['Extended Price_t'] = hit['Extended Price_t'].rstrip('0')
-        #hit['Extended Price_t'] = '$' + '{:,}'.format(float(hit['Extended Price_t']))
-        #hit['Quantity_t'] = hit['Quantity_t'].rstrip('0')
         # remove the version and the id which come back
         del hit['id']
         del hit['_version_']
