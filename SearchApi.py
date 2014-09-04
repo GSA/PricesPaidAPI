@@ -74,7 +74,7 @@ VERSION_ADAPTER_MAP = { '1': [loadRevAucFromCSVFile,getDictionaryFromRevAuc],
 
 def applyToLoadedFiles(actualinputfile,dirpath,pattern,funToApply,maximumToLoad = ppApiConfig.LIMIT_NUM_MATCHING_TRANSACTIONS,version_adapter_map = VERSION_ADAPTER_MAP):
     import os
-    print "maximumToLoad "+  str(maximumToLoad)
+    #print "maximumToLoad "+  str(maximumToLoad)
     onlyfiles = [ f for f in listdir(dirpath) if isfile(join(dirpath,f)) ]
     onlycsvfiles = [ f for f in onlyfiles if re.search(".csv$",f)] 
     firsttime = True
@@ -164,11 +164,14 @@ def searchApiSolr(URLToSolr,pathToData,search_string,psc_pattern,limit=ppApiConf
     logger.info("Not using cache.")        
     localTransactionDir = Transaction.TransactionDirector()        
     t1 = time.clock()
-
-    logger.info("Searching for search_string,psc" + search_string+","+psc_pattern)
-    logger.error("Searching for search_string,psc" + search_string+","+psc_pattern)
+    
+    #logger.info("Searching for search_string,psc" + search_string+","+psc_pattern)
     
     # do a search
+    if '&&' in search_string:
+	search_string = search_string.split('&&')
+	search_string = search_string[0] + ' && ' + search_string[1]
+    logger.error("Searching for search_string, psc =  " + search_string+ " , "+psc_pattern)
     mainSearch = AGGREGATED_TEXT_FIELD+':'+search_string
     pscSearch = Transaction.PSC+':'+psc_pattern
     # the magic happens here...
@@ -197,9 +200,9 @@ def getP3ids(URLToSolr,pathToData,p3idsPickled,limit=ppApiConfig.LIMIT_NUM_MATCH
 
 def processSolrResults(transactionDicts):
     # This is a duplication that must be removed with the above.
-    logger.error('TransactionDicts = {0}'.format(transactionDicts))
+    #logger.error('TransactionDicts = {0}'.format(transactionDicts))
     for hit in transactionDicts.results:
-        logger.error('hit = {0}'.format(hit))
+        #logger.error('hit = {0}'.format(hit))
         # massage the score a little bit --- could normalize to
         # 100% to make a little nicer in the future...
         hit['score'] = int(Decimal(str(hit['score']*100)).quantize(Decimal('1'), rounding=ROUND_UP))

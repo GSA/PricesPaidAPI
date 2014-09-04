@@ -26,7 +26,7 @@ import sys, os
 import Transaction
 import time
 
-from ppApiConfig import PathToDataFiles, MAXIMUM_NUMBER_TO_LOAD, SolrDeleteExistingData, PathToActualInputFiles
+from configs.ppApiConfig import PathToDataFiles, MAXIMUM_NUMBER_TO_LOAD, SolrDeleteExistingData, PathToActualInputFiles
 
 # Note: For now, these are explict imports.
 # Evntually, we want to make this automatic, and essentially

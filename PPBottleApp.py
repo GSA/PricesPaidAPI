@@ -11,8 +11,24 @@ import P3Auth.LogActivity
 
 from SearchApi import searchApiSolr,getP3ids
 
-from ppApiConfig import PathToDataFiles,URLToSolr,LIMIT_NUM_MATCHING_TRANSACTIONS,\
-    CAS_SERVER,CAS_PROXY,CAS_RETURN_SERVICE_URL,CAS_LEVEL_OF_ASSURANCE,CAS_CREATE_SESSION_IF_AUTHENTICATED,CAS_LEVEL_OF_ASSURANCE_PREDICATE
+#from ppApiConfig import PathToDataFiles,URLToSolr,LIMIT_NUM_MATCHING_TRANSACTIONS,\
+#    CAS_SERVER,CAS_PROXY,CAS_RETURN_SERVICE_URL,CAS_LEVEL_OF_ASSURANCE,CAS_CREATE_SESSION_IF_AUTHENTICATED,CAS_LEVEL_OF_ASSURANCE_PREDICATE
+
+from configs.commonconfigs import CAS_SERVER,CAS_PROXY,CAS_LEVEL_OF_ASSURANCE,CAS_LEVEL_OF_ASSURANCE_PREDICATE, TokenTimeout
+from configs.ppApiConfig import PathToDataFiles,LIMIT_NUM_MATCHING_TRANSACTIONS
+import socket
+machinename = socket.gethostname()
+print 'MachineName = ', machinename
+
+if machinename == 'fcoh1c-pp01d':
+   from configs.dev.nodeconfig import URLToPPSearchApiSolr, OMBMAX_REDIRECT_URL,CAS_RETURN_SERVICE_URL,CAS_CREATE_SESSION_IF_AUTHENTICATED, URLToSolr
+#test-web-01 & test-web-02
+elif machinename in ['fcoh1c-ppapi01t','fcoh1c-ppapi02t']:
+   from configs.test.nodeconfig import  URLToPPSearchApiSolr, OMBMAX_REDIRECT_URL,CAS_RETURN_SERVICE_URL,CAS_CREATE_SESSION_IF_AUTHENTICATED,URLToSolr
+#prod-web-01 & prod-web-02
+elif machinename in ['fcoh1c-pppapi01','fcoh1c-pppapi02']:
+   from configs.prod.nodeconfig import  URLToPPSearchApiSolr, OMBMAX_REDIRECT_URL,CAS_RETURN_SERVICE_URL,CAS_CREATE_SESSION_IF_AUTHENTICATED,URLToSolr
+
 
 app = Bottle()
 
