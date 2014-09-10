@@ -168,9 +168,9 @@ def searchApiSolr(URLToSolr,pathToData,search_string,psc_pattern,limit=ppApiConf
     #logger.info("Searching for search_string,psc" + search_string+","+psc_pattern)
     
     # do a search
-    if '&&' in search_string:
-	search_string = search_string.split('&&')
-	search_string = search_string[0] + ' && ' + search_string[1]
+    #if '&&' in search_string:
+    #search_string = search_string.split('&&')
+    #search_string = search_string[0] + ' && ' + search_string[1]
     logger.error("Searching for search_string, psc =  " + search_string+ " , "+psc_pattern)
     mainSearch = AGGREGATED_TEXT_FIELD+':'+search_string
     pscSearch = Transaction.PSC+':'+psc_pattern

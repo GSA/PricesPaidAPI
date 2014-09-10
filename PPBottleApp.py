@@ -26,7 +26,7 @@ if machinename == 'fcoh1c-pp01d':
 elif machinename in ['fcoh1c-ppapi01t','fcoh1c-ppapi02t']:
    from configs.test.nodeconfig import  URLToPPSearchApiSolr, OMBMAX_REDIRECT_URL,CAS_RETURN_SERVICE_URL,CAS_CREATE_SESSION_IF_AUTHENTICATED,URLToSolr
 #prod-web-01 & prod-web-02
-elif machinename in ['fcoh1c-pppapi01','fcoh1c-pppapi02']:
+elif machinename in ['fcoh1c-ppapi01p','fcoh1c-ppapi02p']:
    from configs.prod.nodeconfig import  URLToPPSearchApiSolr, OMBMAX_REDIRECT_URL,CAS_RETURN_SERVICE_URL,CAS_CREATE_SESSION_IF_AUTHENTICATED,URLToSolr
 
 
