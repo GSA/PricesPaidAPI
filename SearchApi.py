@@ -201,6 +201,11 @@ def getP3ids(URLToSolr,pathToData,p3idsPickled,limit=ppApiConfig.LIMIT_NUM_MATCH
 def processSolrResults(transactionDicts):
     # This is a duplication that must be removed with the above.
     #logger.error('TransactionDicts = {0}'.format(transactionDicts))
+    #print 'transactionDicts = ', dir(transactionDicts)
+    #print 'transactionDicts header = ', transactionDicts.header
+    print 'transactionDicts numFound = ', transactionDicts.numFound
+    #print 'transactionDicts = ', transactionDicts.results
+    numFound = transactionDicts.numFound
     for hit in transactionDicts.results:
         #logger.error('hit = {0}'.format(hit))
         # massage the score a little bit --- could normalize to
@@ -221,6 +226,7 @@ def processSolrResults(transactionDicts):
     transactionDicts = transactionDicts[0:LIMIT_NUM_RETURNED_TRANSACTIONS]
     
     numberedTransactionDict = dict(zip(range(0, len(transactionDicts)),transactionDicts))
+    numberedTransactionDict["numFound"] = numFound
     return numberedTransactionDict
 
 def processerrorfile(errorfile_name, dirpath, filename):
